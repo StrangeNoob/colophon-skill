@@ -1,0 +1,8 @@
+{
+  "name": "colophon",
+  "version": "0.1.0",
+  "description": "Publish a directory to the web and get back one governed, versioned URL",
+  "author": { "name": "StrangeNoob" },
+  "homepage": "https://colophon.fyi",
+  "license": "MIT"
+}
