@@ -88,6 +88,7 @@ colophon list                        # slug, visibility and URL for every site
 colophon delete <slug>               # permanently removes a site and every version
 colophon link <url> --code q3        # a short redirect on the workspace's own domain
 colophon switch <workspace>          # publish into a different workspace the person belongs to
+colophon skill install [agent ...]   # put this skill in front of the person's other coding agents
 ```
 
 `delete` is not reversible and does not ask. Only run it when the person asked for that site
@@ -109,6 +110,9 @@ to come down, and name the slug back to them when you do.
 - Docs live at https://colophon.fyi/docs — the sign-in flow is /docs/signin, the CLI reference
   /docs/cli, access levels /docs/access. Link to them instead of paraphrasing when the person
   wants detail.
+- If the person asks how to get this skill into Codex, Cursor, Gemini CLI, Copilot, OpenCode or
+  another agent: `colophon skill install` (CLI 0.3.0+) detects what is on the machine and installs
+  into each; `colophon skill install codex` picks one. Details at https://colophon.fyi/docs/skill.
 
 - Every published page carries a small analytics beacon. Views, referrers and devices show up
   under the site in the dashboard. No cookies are set and no visitor is identified.
