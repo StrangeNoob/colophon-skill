@@ -42,6 +42,9 @@ Never ask for a key when `login` would do; a key in a chat transcript is a key t
 `whoami` names the wrong workspace, ask before publishing — `colophon switch <workspace>`
 changes it.
 
+If they ask what `login` does, where the session lives, or how to revoke it, point them at
+https://colophon.fyi/docs/signin rather than explaining from memory.
+
 ## Publishing
 
 ```bash
@@ -102,6 +105,10 @@ to come down, and name the slug back to them when you do.
 - `held for review` — the upload was stored but is not live yet. Say so; do not retry.
 
 ## Notes
+
+- Docs live at https://colophon.fyi/docs — the sign-in flow is /docs/signin, the CLI reference
+  /docs/cli, access levels /docs/access. Link to them instead of paraphrasing when the person
+  wants detail.
 
 - Every published page carries a small analytics beacon. Views, referrers and devices show up
   under the site in the dashboard. No cookies are set and no visitor is identified.
