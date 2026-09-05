@@ -1,6 +1,7 @@
 ---
 name: colophon
 description: Use when you have produced HTML, a report, a chart, a slide deck or any directory of files and the person needs a URL for it — publishes a directory to the web, updates it in place, controls who can see it, and takes it down again.
+license: MIT
 ---
 
 # Colophon
