@@ -7,30 +7,26 @@ other agent that reads skills.
 
 ## Install
 
-**Claude Code** — as a plugin, so it updates itself:
-
 ```bash
-claude plugin marketplace add StrangeNoob/colophon-skill
-claude plugin install colophon@colophon
+npm install -g @strangenoob/colophon
+colophon skill install
 ```
 
-**Everything else** — the cross-agent installer detects the agents on your machine and puts
-the skill where each one looks:
+Finds every coding agent on your machine — Claude Code, Codex, Cursor, Gemini CLI, GitHub
+Copilot, OpenCode and more — and installs the skill into each. Name agents to be selective:
+`colophon skill install codex cursor`. Claude Code gets it as a plugin so it updates itself;
+the others get a copy placed by the cross-agent installer, `npx skills`. Run it again to update.
 
-```bash
-npx skills add StrangeNoob/colophon-skill -g
-```
-
-Pick one agent with `-a codex` or `-a cursor`, or install into all of them with `-a '*'`. By hand: copy `skills/colophon` into `~/.agents/skills/colophon`, the shared
-location Codex and friends read, or into the agent's own skills directory.
+By hand: `claude plugin marketplace add StrangeNoob/colophon-skill && claude plugin install
+colophon@colophon` for Claude Code, `npx skills add StrangeNoob/colophon-skill -g` for the
+rest, or copy `skills/colophon` into `~/.agents/skills/colophon`.
 
 ## What it needs
 
-The [`@strangenoob/colophon`](https://www.npmjs.com/package/@strangenoob/colophon) CLI on the
-path, signed in:
+The [`@strangenoob/colophon`](https://www.npmjs.com/package/@strangenoob/colophon) CLI, signed
+in:
 
 ```bash
-npm install -g @strangenoob/colophon
 colophon login          # opens the browser; approve once
 ```
 
