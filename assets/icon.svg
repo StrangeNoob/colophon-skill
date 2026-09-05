@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Colophon mark</title>
+  <rect width="512" height="512" rx="112" fill="#5B5BD6"/>
+  <circle cx="256" cy="256" r="109" fill="#FFFFFF"/>
+  <circle cx="256" cy="256" r="75" fill="#5B5BD6"/>
+  <rect x="239" y="92" width="34" height="328" rx="17" fill="#FFFFFF"/>
+  <rect x="92" y="239" width="328" height="34" rx="17" fill="#FFFFFF"/>
+</svg>

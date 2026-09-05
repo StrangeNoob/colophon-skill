@@ -1,0 +1,38 @@
+{
+  "name": "colophon",
+  "version": "0.2.2",
+  "description": "Publish a directory to the web and return one governed, versioned URL.",
+  "author": {
+    "name": "StrangeNoob",
+    "url": "https://github.com/StrangeNoob"
+  },
+  "homepage": "https://colophon.fyi",
+  "repository": "https://github.com/StrangeNoob/colophon-skill",
+  "license": "MIT",
+  "keywords": [
+    "publishing",
+    "static-sites",
+    "reports"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Colophon",
+    "shortDescription": "Publish agent-made files to a stable URL.",
+    "longDescription": "Publish HTML, reports, charts, slide decks, and other generated files to one governed URL. Update the same URL in place and choose who can open it.",
+    "developerName": "StrangeNoob",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Write"
+    ],
+    "websiteURL": "https://colophon.fyi",
+    "defaultPrompt": [
+      "Publish this directory and give me an unlisted URL.",
+      "Update the existing published site without changing its URL.",
+      "Publish this report so only the named readers can open it."
+    ],
+    "brandColor": "#5B5BD6",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "logoDark": "./assets/logo-dark.png"
+  }
+}
