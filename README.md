@@ -1,14 +1,42 @@
-# colophon — Claude Code skill
+# colophon — an agent skill
 
-Teaches an agent to publish a directory to the web and hand back one governed, versioned URL.
+Teaches a coding agent to publish a directory to the web and hand back one governed,
+versioned URL. One `SKILL.md` in the open [Agent Skills](https://agentskills.io) format, so the
+same skill works in Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode and any
+other agent that reads skills.
 
+## Install
+
+**Claude Code** — as a plugin, so it updates itself:
+
+```bash
+claude plugin marketplace add StrangeNoob/colophon-skill
+claude plugin install colophon@colophon
 ```
-/plugin marketplace add StrangeNoob/colophon-skill
-/plugin install colophon
+
+**Everything else** — the cross-agent installer detects the agents on your machine and puts
+the skill where each one looks:
+
+```bash
+npx skills add StrangeNoob/colophon-skill -g
 ```
 
-Then the agent reaches for it whenever it has produced files that a person needs a link to —
-a report, a chart, a slide deck, a rendered page.
+Pick one agent with `-a codex` or `-a cursor`, or install into all of them with `-a '*'`. By hand: copy `skills/colophon` into `~/.agents/skills/colophon`, the shared
+location Codex and friends read, or into the agent's own skills directory.
+
+## What it needs
+
+The [`@strangenoob/colophon`](https://www.npmjs.com/package/@strangenoob/colophon) CLI on the
+path, signed in:
+
+```bash
+npm install -g @strangenoob/colophon
+colophon login          # opens the browser; approve once
+```
+
+On a headless machine — CI, a server, a sandbox with no browser — set an API key in
+`COLOPHON_TOKEN` instead. Mint one with `colophon create-token --name <agent>` from your own
+machine. How signing in works: <https://colophon.fyi/docs/signin>.
 
 ## What it teaches
 
@@ -17,29 +45,9 @@ a report, a chart, a slide deck, a rendered page.
   already given to someone stays correct — rather than publishing a second site per draft
 - which of `public` / `unlisted` / `restricted` / `private` fits the request, and that the
   restricted ones make the reader sign in first
-- to stop and ask for an API key rather than guessing, because only a person can create one
+- to check `colophon whoami` first and, if nothing is signed in, to stop and ask the person to
+  run `colophon login` — never to ask for a key when a login would do
 - what each failure means, including quota limits — and not to delete someone's site to make
   room on its own initiative
 
-## The CLI
-
-The skill drives [`@strangenoob/colophon`](https://www.npmjs.com/package/@strangenoob/colophon):
-
-```bash
-npm install -g @strangenoob/colophon
-export COLOPHON_TOKEN=colo_live_…     # app.colophon.fyi → Keys
-colophon publish ./report --name "Q3 report"
-```
-
-Node 18+. Point `COLOPHON_API` at your own instance if you self-host.
-
-## Without the plugin system
-
-Copy the skill straight in:
-
-```bash
-git clone https://github.com/StrangeNoob/colophon-skill
-cp -R colophon-skill/skills/colophon ~/.claude/skills/colophon
-```
-
-MIT © StrangeNoob
+Docs: <https://colophon.fyi/docs>. MIT © StrangeNoob
