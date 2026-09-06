@@ -1,6 +1,6 @@
 {
   "name": "colophon",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Publish a directory to the web and return one governed, versioned URL.",
   "author": {
     "name": "StrangeNoob",

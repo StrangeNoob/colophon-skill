@@ -82,6 +82,19 @@ someone needs to open on their phone in a hurry unless access control actually m
 To add a named reader to a `restricted` site, open the site in the dashboard and add the
 address under **Shared with** — the person does not need an account first.
 
+## Their own domain
+
+A workspace can answer on a hostname of its own — `https://m.example.dev/report/` instead of
+`https://acme.usercontent.colophon.fyi/report/`. Once it is live, that is the URL `publish` and
+`list` print; the subdomain form keeps working too. Hand the person whichever the CLI printed —
+both are correct.
+
+Attaching one is an owner's job in the dashboard (**Members → Workspace**), not something you
+can do from the CLI. If the person asks for their sites on their own domain, tell them where,
+and what to expect: they type the hostname, get two DNS records to add (a TXT that proves it is
+theirs and a CNAME to their subdomain), and their URLs switch on their own once both resolve —
+nothing needs republishing. Details at https://colophon.fyi/docs/workspaces#domain.
+
 ## Other commands
 
 ```bash

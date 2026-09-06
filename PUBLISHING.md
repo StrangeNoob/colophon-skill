@@ -29,7 +29,7 @@ GitHub CLI 2.90 or later can validate and publish every skill in this repository
 
 ```bash
 gh skill publish --dry-run
-gh skill publish --tag v0.2.2
+gh skill publish --tag v0.2.3
 ```
 
 Commit and push the tested release commit before publishing. Do not publish from an unmerged
