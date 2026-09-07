@@ -1,6 +1,6 @@
 ---
 name: colophon
-description: Use when you have produced HTML, a report, a chart, a slide deck or any directory of files and the person needs a URL for it — publishes a directory to the web, updates it in place, controls who can see it, and takes it down again.
+description: Use when you have produced HTML, Markdown, a plan, a report, a chart, a slide deck, a single file or any directory of files and the person needs a URL for it — publishes a directory or one file to the web, renders bare Markdown as pages, updates it in place, controls who can see it, and takes it down again.
 license: MIT
 ---
 
@@ -8,7 +8,7 @@ license: MIT
 
 You made the files. This gives them an address.
 
-`colophon publish <dir>` packs a directory, uploads it, and prints one URL. Re-publishing the
+`colophon publish <dir|file>` packs a directory, or one file, uploads it, and prints one URL. Re-publishing the
 same slug replaces what is live without changing the URL, so a link you hand someone stays
 correct as the work changes.
 
@@ -19,7 +19,7 @@ npm install -g @strangenoob/colophon
 ```
 
 Or run it without installing: `npx @strangenoob/colophon publish ./dir`. Needs Node 18+ and
-version 0.2.0 or later for `login`.
+version 0.2.0 or later for `login`, 0.5.0 or later to publish a single file.
 
 ## Before the first publish
 
@@ -50,11 +50,17 @@ https://colophon.fyi/docs/signin rather than explaining from memory.
 
 ```bash
 colophon publish ./report --name "Q3 report" --visibility unlisted
+colophon publish plan.md                         # one file is a site of one page
 ```
 
 Prints the URL on stdout and a one-line summary on stderr. Give the person the URL.
 
-- `<dir>` needs an `index.html` at its top level to have a working root. The CLI warns if not.
+- Publish what you made as it is. A plan, a spec or a report in Markdown needs no HTML
+  wrapping: every `.md` is rendered to an `.html` beside it at publish time, with links between
+  Markdown files rewritten to match. A `README.md` or `index.md` stands in for a missing
+  `index.html`, and a root with neither shows the one page it has, or a listing of every file.
+  The original files stay at their own URLs. To keep a Markdown file unrendered, ship your own
+  `x.html` beside `x.md`.
 - `--name` is the display name in the dashboard. Defaults to the directory name.
 - `--slug` fixes the URL path. Defaults to a slug derived from the name — pass it explicitly
   when you intend to update this site later, so a changed name cannot move the URL.

@@ -49,7 +49,7 @@ On a headless machine—CI, a server, or a sandbox without a browser—set an AP
 
 ## What the skill teaches
 
-- Publish a directory with `colophon publish <dir>` and return its URL.
+- Publish a directory or one file with `colophon publish <dir|file>` and return its URL.
 - Re-publish the same slug to update a site without changing its URL.
 - Choose between `public`, `unlisted`, `restricted`, and `private` visibility.
 - Check `colophon whoami` before publishing and keep credentials out of chat.
