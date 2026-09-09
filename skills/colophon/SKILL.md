@@ -39,12 +39,36 @@ both ways need them:
   `colophon create-token --name <agent-name>`, or under **API keys** in the dashboard. It is
   shown once.
 
-Never ask for a key when `login` would do; a key in a chat transcript is a key to revoke. If
-`whoami` names the wrong workspace, ask before publishing — `colophon switch <workspace>`
-changes it.
+Never ask for a key when `login` would do; a key in a chat transcript is a key to revoke.
 
 If they ask what `login` does, where the session lives, or how to revoke it, point them at
 https://colophon.fyi/docs/signin rather than explaining from memory.
+
+## Ask two things first
+
+Where the site lives and who can open it are the person's to decide, and `whoami`'s answer is
+only a default. Ask both in one message, once per conversation — not before every publish — and
+skip whichever they have already answered ("put it on the team workspace, anyone with the link"
+is both).
+
+**Which workspace?** `colophon switch` with no argument lists every workspace they belong to,
+with `*` on the one publishes land in now:
+
+```bash
+colophon switch          # * acme   owner    Acme Inc
+                         #   side   member   Side Projects
+colophon switch side     # publish into that one from now on
+```
+
+One line means one workspace: name it and move on. Signed in with `COLOPHON_TOKEN` there is
+nothing to ask either — a key belongs to one workspace, `whoami` names it, and `switch` refuses.
+Pass the left-hand column to `switch`; the display name is not what it matches on.
+
+**Who should be able to open it?** Offer three — `unlisted` (anyone with the link, not indexed:
+suggest this one), `public` (anyone, indexed by search engines), `restricted` (workspace members
+plus named email addresses, each asked to sign in). `private`, workspace members only, is there
+if they ask for it. Pass the answer as `--visibility` on every publish of that site, re-publishes
+included — then its level is never left to whatever the CLI defaults to.
 
 ## Publishing
 
@@ -72,8 +96,8 @@ site for a second draft.
 
 ## Choosing visibility
 
-Default to `unlisted` unless the person says otherwise. It is the one that matches what people
-usually mean by "send me a link".
+The second question in full. `unlisted` is the one that matches what people usually mean by
+"send me a link", so suggest it when they have no view.
 
 | | Who can open it |
 |---|---|
@@ -107,7 +131,7 @@ nothing needs republishing. Details at https://colophon.fyi/docs/workspaces#doma
 colophon list                        # slug, visibility and URL for every site
 colophon delete <slug>               # permanently removes a site and every version
 colophon link <url> --code q3        # a short redirect on the workspace's own domain
-colophon switch <workspace>          # publish into a different workspace the person belongs to
+colophon switch [workspace]          # list the workspaces the person belongs to, or work in another
 colophon skill install [agent ...]   # put this skill in front of the person's other coding agents
 ```
 
