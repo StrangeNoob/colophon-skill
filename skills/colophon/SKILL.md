@@ -19,7 +19,7 @@ npm install -g @strangenoob/colophon
 ```
 
 Or run it without installing: `npx @strangenoob/colophon publish ./dir`. Needs Node 18+ and
-version 0.2.0 or later for `login`, 0.5.0 or later to publish a single file.
+version 0.6.0 or later — everything below assumes it.
 
 ## Before the first publish
 
@@ -155,7 +155,7 @@ to come down, and name the slug back to them when you do.
   /docs/cli, access levels /docs/access. Link to them instead of paraphrasing when the person
   wants detail.
 - If the person asks how to get this skill into Codex, Cursor, Gemini CLI, Copilot, OpenCode or
-  another agent: `colophon skill install` (CLI 0.3.0+) detects what is on the machine and installs
+  another agent: `colophon skill install` detects what is on the machine and installs
   into each; `colophon skill install codex` picks one. Details at https://colophon.fyi/docs/skill.
 
 - Every published page carries a small analytics beacon. Views, referrers and devices show up
