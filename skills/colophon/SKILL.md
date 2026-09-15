@@ -19,7 +19,9 @@ npm install -g @strangenoob/colophon
 ```
 
 Or run it without installing: `npx @strangenoob/colophon publish ./dir`. Needs Node 18+ and
-version 0.6.0 or later — everything below assumes it.
+version 0.7.0 or later — everything below assumes it. Against a current server an older CLI
+answers `colophon list` with the first fifty sites and no sign there are more, and
+`colophon delete <slug>` refuses slugs it cannot see.
 
 ## Before the first publish
 
