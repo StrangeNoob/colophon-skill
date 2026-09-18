@@ -15,7 +15,7 @@ npx --yes skills add StrangeNoob/colophon-skill --skill colophon -g
 Or install through Colophon's own CLI:
 
 ```bash
-npm install -g @strangenoob/colophon
+npm install -g @strangenoob/colophon@0.9.0
 colophon skill install
 ```
 
@@ -39,9 +39,11 @@ Install the [`@strangenoob/colophon`](https://www.npmjs.com/package/@strangenoob
 sign in:
 
 ```bash
-npm install -g @strangenoob/colophon
+npm install -g @strangenoob/colophon@0.9.0
 colophon login
 ```
+
+The version is pinned to the CLI this skill describes and moves with each skill release.
 
 On a headless machine—CI, a server, or a sandbox without a browser—set an API key in
 `COLOPHON_TOKEN`. Mint one with `colophon create-token --name <agent>` from your own machine. See
