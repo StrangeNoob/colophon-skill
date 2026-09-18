@@ -19,9 +19,9 @@ npm install -g @strangenoob/colophon
 ```
 
 Or run it without installing: `npx @strangenoob/colophon publish ./dir`. Needs Node 18+ and
-version 0.7.0 or later — everything below assumes it. Against a current server an older CLI
-answers `colophon list` with the first fifty sites and no sign there are more, and
-`colophon delete <slug>` refuses slugs it cannot see.
+version 0.9.0 or later — everything below assumes it. An older CLI has no `versions`,
+`visibility`, `expire` or `--expires`, and before 0.7.0 answers `colophon list` with the first
+fifty sites and no sign there are more.
 
 ## Before the first publish
 
@@ -91,10 +91,15 @@ Prints the URL on stdout and a one-line summary on stderr. Give the person the U
 - `--slug` fixes the URL path. Defaults to a slug derived from the name — pass it explicitly
   when you intend to update this site later, so a changed name cannot move the URL.
 - `.git`, `.env`, `node_modules` and editor junk are never uploaded.
+- `--expires <moment>` (ISO 8601, e.g. `2026-10-01T00:00:00Z`) makes the site stop answering
+  after that moment — `410` on every path, nothing deleted. For output the person only needs
+  for a while, at a deadline they named; never invent one. `--expires none` clears it.
 
 **To update a published site, publish again with the same `--slug`.** The old version is kept
 and can be rolled back from the dashboard; the URL does not change. Do not publish a second
-site for a second draft.
+site for a second draft. The summary on stderr says what the republish changed against the
+version before — `+2 ~1 -1` is files added, changed, removed; `identical` means nothing moved —
+so tell the person that, not just the URL.
 
 ## Choosing visibility
 
@@ -131,11 +136,25 @@ nothing needs republishing. Details at https://colophon.fyi/docs/workspaces#doma
 
 ```bash
 colophon list                        # slug, visibility and URL for every site
+colophon versions <slug>             # every version, newest first, with what each one changed
+colophon versions <slug> --diff 2    # what making v2 live would change against what is live now
+colophon visibility <slug> <level>   # change who can open a site without republishing it
+colophon expire <slug> <moment>|none # when it stops answering (410, nothing deleted); none clears
 colophon delete <slug>               # permanently removes a site and every version
 colophon link <url> --code q3        # a short redirect on the workspace's own domain
 colophon switch [workspace]          # list the workspaces the person belongs to, or work in another
 colophon skill install [agent ...]   # put this skill in front of the person's other coding agents
 ```
+
+`versions` answers "what changed?" without opening two pages: `+2 ~1 -1` per version, or
+`identical` for a republish that moved nothing, and `--diff <n> --patch <path>` prints one
+file's unified diff. Making an older version live is done from the dashboard, where the same
+comparison sits beside the button.
+
+`visibility` and `expire` change a site in place, on the person's word only — they are the
+person's decisions, like the two questions above. Name the level or the moment back to them.
+`expire` with a moment already past takes the site down now and deletes nothing; `none`, or a
+later moment, brings it back.
 
 `delete` is not reversible and does not ask. Only run it when the person asked for that site
 to come down, and name the slug back to them when you do.
