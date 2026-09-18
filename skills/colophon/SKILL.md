@@ -15,13 +15,14 @@ correct as the work changes.
 ## Installing the CLI
 
 ```bash
-npm install -g @strangenoob/colophon
+npm install -g @strangenoob/colophon@0.9.0
 ```
 
-Or run it without installing: `npx @strangenoob/colophon publish ./dir`. Needs Node 18+ and
-version 0.9.0 or later — everything below assumes it. An older CLI has no `versions`,
+Or run it without installing: `npx @strangenoob/colophon@0.9.0 publish ./dir`. Needs Node 18+.
+The version is pinned on purpose — it is the CLI this document describes, and the pin moves
+with the skill — rather than whatever npm has on the day. An older CLI has no `versions`,
 `visibility`, `expire` or `--expires`, and before 0.7.0 answers `colophon list` with the first
-fifty sites and no sign there are more.
+fifty sites and no sign there are more; `colophon help` shows what is installed.
 
 ## Before the first publish
 
@@ -139,7 +140,8 @@ colophon list                        # slug, visibility and URL for every site
 colophon versions <slug>             # every version, newest first, with what each one changed
 colophon versions <slug> --diff 2    # what making v2 live would change against what is live now
 colophon visibility <slug> <level>   # change who can open a site without republishing it
-colophon expire <slug> <moment>|none # when it stops answering (410, nothing deleted); none clears
+colophon expire <slug> <moment>      # when it stops answering: 410 on every path, nothing deleted
+colophon expire <slug> none          # clear that, so it answers again
 colophon delete <slug>               # permanently removes a site and every version
 colophon link <url> --code q3        # a short redirect on the workspace's own domain
 colophon switch [workspace]          # list the workspaces the person belongs to, or work in another
