@@ -15,7 +15,7 @@ npx --yes skills add StrangeNoob/colophon-skill --skill colophon -g
 Or install through Colophon's own CLI:
 
 ```bash
-npm install -g @strangenoob/colophon@0.9.0
+npm install -g @strangenoob/colophon@0.11.1
 colophon skill install
 ```
 
@@ -39,7 +39,7 @@ Install the [`@strangenoob/colophon`](https://www.npmjs.com/package/@strangenoob
 sign in:
 
 ```bash
-npm install -g @strangenoob/colophon@0.9.0
+npm install -g @strangenoob/colophon@0.11.1
 colophon login
 ```
 
@@ -54,6 +54,8 @@ On a headless machine—CI, a server, or a sandbox without a browser—set an AP
 - Publish a directory or one file with `colophon publish <dir|file>` and return its URL.
 - Re-publish the same slug to update a site without changing its URL.
 - Choose between `public`, `unlisted`, `restricted`, and `private` visibility.
+- Publish from CI in one `npx` step: pinned, a fixed slug, the key in a secret.
+- Find which live page said something with `colophon search`.
 - Check `colophon whoami` before publishing and keep credentials out of chat.
 - Explain operational failures without deleting an existing site on the user's behalf.
 
