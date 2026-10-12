@@ -1,6 +1,6 @@
 ---
 name: colophon
-description: Use when you have produced HTML, Markdown, a plan, a report, a chart, a slide deck, a single file or any directory of files and the person needs a URL for it — publishes a directory or one file to the web, renders bare Markdown as pages, updates it in place, rolls it back to an earlier version, controls who can see it, and takes it down again.
+description: Use when you have produced HTML, Markdown, a plan, a report, a chart, a slide deck, a single file or any directory of files and the person needs a URL for it — publishes a directory or one file to the web, renders bare Markdown as pages, updates it in place, rolls it back to an earlier version, controls who can see it — named people, or a password — and takes it down again.
 license: MIT
 ---
 
@@ -20,8 +20,8 @@ npm install -g @strangenoob/colophon@0.12.0
 
 Or run it without installing: `npx @strangenoob/colophon@0.12.0 publish ./dir`. Needs Node 18+.
 The version is pinned on purpose — it is the CLI this document describes, and the pin moves
-with the skill — rather than whatever npm has on the day. An older CLI has no `make-live`
-(0.12.0), publishes without an account when `COLOPHON_TOKEN` is set but empty (until 0.11.1),
+with the skill — rather than whatever npm has on the day. An older CLI has no `make-live` and
+no `password` level (0.12.0), publishes without an account when `COLOPHON_TOKEN` is set but empty (until 0.11.1),
 has no `search` (0.11.0), no `versions`, `visibility`, `expire` or `--expires` (0.9.0), and
 before 0.7.0 answers `colophon list` with the first fifty sites and no sign there are more;
 `colophon help` shows what is installed.
@@ -76,9 +76,11 @@ Pass the left-hand column to `switch`; the display name is not what it matches o
 **Who should be able to open it?** Offer three — `unlisted` (anyone with the link: suggest this
 one), `public` (anyone, and the only level search engines may index, if the workspace's owner
 allows them), `restricted` (workspace members plus named email addresses, each asked to sign
-in). `private`, workspace members only, is there
-if they ask for it. Pass the answer as `--visibility` on every publish of that site, re-publishes
-included — then its level is never left to whatever the CLI defaults to.
+in). Two more are there if they ask for them, or describe them: `password` (anyone with the link
+who also types a password — no account, no sign-in: a client review, readers outside the
+workspace) and `private` (workspace members only). Pass the answer as `--visibility` on every
+publish of that site, re-publishes included — then its level is never left to whatever the CLI
+defaults to. The one exception is `password`; see below.
 
 ## Publishing
 
@@ -145,6 +147,7 @@ The second question in full. `unlisted` is the one that matches what people usua
 |---|---|
 | `public` | Anyone. Search engines may index it once the workspace's owner allows them — off by default. |
 | `unlisted` | Anyone with the link. Never indexed. **Default.** |
+| `password` | Anyone with the link who types the password. No sign-in; members are asked too. Never indexed. |
 | `restricted` | Workspace members, plus named email addresses. Each is asked to sign in. |
 | `private` | Workspace members only. |
 
@@ -153,6 +156,35 @@ someone needs to open on their phone in a hurry unless access control actually m
 
 To add a named reader to a `restricted` site, open the site in the dashboard and add the
 address under **Shared with** — the person does not need an account first.
+
+### A password
+
+The password is the person's to choose. Ask for it; never make one up unasked, and if they ask
+you to pick, tell them what you picked. Pipe it in — it is never an argument (`--password` is
+refused, since it would sit in shell history and `ps`), and never goes in the site's files:
+
+```bash
+printf '%s' 'the password' | colophon publish ./review --slug review --visibility password --password-stdin
+```
+
+- Without `--password-stdin` the CLI asks for the password in a terminal, which only the person
+  can answer. So when you set one, always pipe it. If they would rather not type it here, give
+  them that command without the `printf` and `--password-stdin` to run in their own terminal:
+  it asks twice and echoes nothing.
+- At least six characters, and no space at either end. If the server refuses one, ask for
+  another; do not trim or pad theirs yourself.
+- **Re-publishing a password site: leave both `--visibility` and `--password-stdin` off.** The
+  level and the password stay as they are, and nothing asks for one. Sending the password again,
+  even the same one, counts as a new one: every reader would have to type it again.
+- The CLI answers `password set — give it to your readers yourself`: Colophon keeps only a hash
+  and can never show it again. Tell the person to keep it with the link and send it to readers
+  their own way. Lost, it is replaced, not recovered.
+- To change it: `printf '%s' 'new one' | colophon visibility <slug> password --password-stdin`.
+  Everyone holding the old one is asked again. That, and moving the site to another level (which
+  discards the password), is an owner's decision, like any change of level.
+- A reader types it at the page and stays in for an hour in that browser, then types it again.
+  Nobody signs in, so a password page has no comments and no list of who opened it. If the
+  person wants either, that is `restricted`.
 
 ## Publishing from CI
 
@@ -185,6 +217,9 @@ GitHub Actions:
   request from a fork gets no secrets. The CLI refuses rather than publishing without an account.
   Publish on `push`, or on pull requests from branches of the same repository.
 - `COLOPHON_API` in the step's `env` points it at a self-hosted instance.
+- A `password` site from CI: publish it the first time from a terminal with its password (see
+  [A password](#a-password)), and leave `--visibility` off in the workflow. Every run then keeps
+  the level and the password; piping it in on each run would make every reader type it again.
 
 There is no Colophon GitHub Action to `uses:`; this step is the supported way. Details at
 https://colophon.fyi/docs/cli#ci.
@@ -229,6 +264,7 @@ matched. `"a phrase"` goes in quotes, quoted again for the shell, and `-word` le
 
 `visibility` and `expire` change a site in place, on the person's word only — they are the
 person's decisions, like the two questions above. Name the level or the moment back to them.
+To `password`, pipe the password in with `--password-stdin`, as above.
 `expire` with a moment already past takes the site down now and deletes nothing; `none`, or a
 later moment, brings it back.
 
@@ -246,8 +282,14 @@ to come down, and name the slug back to them when you do.
   `--draft` and give them the preview URL and the `make-live` command it printed; a publisher or
   owner runs that, or uses **Make live** in the dashboard. Do not ask them to change roles.
 - `… needs the owner role or above` on `visibility`, `expire` or `delete`, or `changing an
-  existing site's visibility is for owners` on a republish — those are an owner's decisions.
-  Republish without `--visibility` to keep the level as it is, and say who can change it.
+  existing site's visibility is for owners` (or `password is for owners`) on a republish — those
+  are an owner's decisions. Republish without `--visibility` or `--password-stdin` to keep the
+  site as it is, and say who can change it.
+- `visibility 'password' needs a password for readers to type` — the level went without one.
+  Ask the person for it and pipe it in with `--password-stdin`.
+- `password must be at least 6 characters`, `… cannot start or end with a space` — ask for
+  another. `--password-stdin read nothing` — the pipe was empty. `--password would leave it in
+  your shell history` — pipe it instead.
 - `quota exceeded: sites (4 > 3)` — the plan's site limit. Either `colophon delete` a site
   that is finished with, or the person upgrades. Do not delete one to make room on your own.
 - `archive contains no files` — the directory is empty, or everything in it was skipped.
