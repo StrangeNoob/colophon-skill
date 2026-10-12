@@ -1,6 +1,6 @@
 ---
 name: colophon
-description: Use when you have produced HTML, Markdown, a plan, a report, a chart, a slide deck, a single file or any directory of files and the person needs a URL for it — publishes a directory or one file to the web, renders bare Markdown as pages, updates it in place, controls who can see it, and takes it down again.
+description: Use when you have produced HTML, Markdown, a plan, a report, a chart, a slide deck, a single file or any directory of files and the person needs a URL for it — publishes a directory or one file to the web, renders bare Markdown as pages, updates it in place, rolls it back to an earlier version, controls who can see it — named people, or a password — and takes it down again.
 license: MIT
 ---
 
@@ -15,16 +15,16 @@ correct as the work changes.
 ## Installing the CLI
 
 ```bash
-npm install -g @strangenoob/colophon@0.11.1
+npm install -g @strangenoob/colophon@0.12.0
 ```
 
-Or run it without installing: `npx @strangenoob/colophon@0.11.1 publish ./dir`. Needs Node 18+.
+Or run it without installing: `npx @strangenoob/colophon@0.12.0 publish ./dir`. Needs Node 18+.
 The version is pinned on purpose — it is the CLI this document describes, and the pin moves
-with the skill — rather than whatever npm has on the day. An older CLI publishes without an
-account when `COLOPHON_TOKEN` is set but empty (until 0.11.1), has no `search` (0.11.0), no
-`versions`, `visibility`, `expire` or `--expires` (0.9.0), and before 0.7.0 answers
-`colophon list` with the first fifty sites and no sign there are more; `colophon help` shows
-what is installed.
+with the skill — rather than whatever npm has on the day. An older CLI has no `make-live` and
+no `password` level (0.12.0), publishes without an account when `COLOPHON_TOKEN` is set but empty (until 0.11.1),
+has no `search` (0.11.0), no `versions`, `visibility`, `expire` or `--expires` (0.9.0), and
+before 0.7.0 answers `colophon list` with the first fifty sites and no sign there are more;
+`colophon help` shows what is installed.
 
 ## Before the first publish
 
@@ -76,9 +76,11 @@ Pass the left-hand column to `switch`; the display name is not what it matches o
 **Who should be able to open it?** Offer three — `unlisted` (anyone with the link: suggest this
 one), `public` (anyone, and the only level search engines may index, if the workspace's owner
 allows them), `restricted` (workspace members plus named email addresses, each asked to sign
-in). `private`, workspace members only, is there
-if they ask for it. Pass the answer as `--visibility` on every publish of that site, re-publishes
-included — then its level is never left to whatever the CLI defaults to.
+in). Two more are there if they ask for them, or describe them: `password` (anyone with the link
+who also types a password — no account, no sign-in: a client review, readers outside the
+workspace) and `private` (workspace members only). Pass the answer as `--visibility` on every
+publish of that site, re-publishes included — then its level is never left to whatever the CLI
+defaults to. The one exception is `password`; see below.
 
 ## Publishing
 
@@ -103,11 +105,38 @@ Prints the URL on stdout and a one-line summary on stderr. Give the person the U
   after that moment — `410` on every path, nothing deleted. For output the person only needs
   for a while, at a deadline they named; never invent one. `--expires none` clears it.
 
-**To update a published site, publish again with the same `--slug`.** The old version is kept
-and can be rolled back from the dashboard; the URL does not change. Do not publish a second
+**To update a published site, publish again with the same `--slug`.** The old version is kept,
+and `colophon make-live` puts it back (below); the URL does not change. Do not publish a second
 site for a second draft. The summary on stderr says what the republish changed against the
 version before — `+2 ~1 -1` is files added, changed, removed; `identical` means nothing moved —
 so tell the person that, not just the URL.
+
+## Rolling back, and making a draft live
+
+```bash
+colophon versions report             # v3 live, v2, v1 — each with what it changed
+colophon versions report --diff 2    # what making v2 live would change against what is live now
+colophon make-live report 2          # v2 is live again; the URL does not change
+```
+
+`make-live` makes one of a site's kept versions the live one. Nothing is uploaded and nothing is
+deleted: the version it replaces stays, and comes back the same way. `colophon rollback` is the
+same command.
+
+- **"Undo that", "put back yesterday's version", "the last publish broke it"** — that is
+  `make-live` with an earlier version, not a republish of old files. Run `versions` first, pick
+  the number from it (v1 is the oldest), and name it back to the person — "v2, from 14 October,
+  before the chart change" — so they can say if it is the wrong one.
+- **A draft goes live the same way, once the person approves it.** A `--draft` publish prints the
+  exact command, `colophon make-live <site id> <version id>`. Run it only on their word: a draft
+  is there so someone looks before it goes live, and making it live because you can is the
+  thing it was there to prevent.
+- Tell them what moved. stdout is the URL; stderr says `v2 is live in place of v3: ~1 -1`, or
+  `v2 was already live; nothing changed`.
+- A version held for review cannot be made live — a Colophon admin releases or rejects it — and
+  one rejected in review never can. Say so; do not retry.
+- It does not touch the expiry. On an expired site the CLI says so — the site still answers
+  `410`, and bringing it back (`colophon expire <slug> none`) is the owner's call.
 
 ## Choosing visibility
 
@@ -118,6 +147,7 @@ The second question in full. `unlisted` is the one that matches what people usua
 |---|---|
 | `public` | Anyone. Search engines may index it once the workspace's owner allows them — off by default. |
 | `unlisted` | Anyone with the link. Never indexed. **Default.** |
+| `password` | Anyone with the link who types the password. No sign-in; members are asked too. Never indexed. |
 | `restricted` | Workspace members, plus named email addresses. Each is asked to sign in. |
 | `private` | Workspace members only. |
 
@@ -126,6 +156,47 @@ someone needs to open on their phone in a hurry unless access control actually m
 
 To add a named reader to a `restricted` site, open the site in the dashboard and add the
 address under **Shared with** — the person does not need an account first.
+
+### A password
+
+The password is the person's to choose. Ask for it; never make one up unasked, and if they ask
+you to pick, tell them what you picked. It is never an argument (`--password` is refused, since it
+would sit in shell history and `ps`), and it never goes in the site's files.
+
+The best way keeps it out of this chat and off every command line: give the person the command
+to run in their own terminal, where the CLI asks for it twice and echoes nothing.
+
+```bash
+colophon publish ./review --slug review --visibility password
+```
+
+When they would rather tell you, pipe it in from your own shell. The CLI asks in a terminal only,
+so a command you run must bring the password with it:
+
+```bash
+printf '%s' 'the password' | colophon publish ./review --slug review --visibility password --password-stdin
+```
+
+- That line carries the password, so it is for running yourself, never for handing to a person:
+  an interactive shell saves every line in its history. Anything they run themselves is the
+  prompting form above.
+- In a script, take it from a variable the person set — `printf '%s' "$SITE_PASSWORD" | …` —
+  never a literal.
+- At least six characters, and no space at either end. If the server refuses one, ask for
+  another; do not trim or pad theirs yourself.
+- **Re-publishing a password site: leave both `--visibility` and `--password-stdin` off.** The
+  level and the password stay as they are, and nothing asks for one. Sending the password again,
+  even the same one, counts as a new one: every reader would have to type it again.
+- The CLI answers `password set — give it to your readers yourself`: Colophon keeps only a hash
+  and can never show it again. Tell the person to keep it with the link and send it to readers
+  their own way. Lost, it is replaced, not recovered.
+- To change it, the person runs `colophon visibility <slug> password` in their own terminal and
+  types the new one at the prompt; if they tell you instead, pipe it with `--password-stdin`, as
+  above. Everyone holding the old one is asked again. That, and moving the site to another level
+  (which discards the password), is an owner's decision, like any change of level.
+- A reader types it at the page and stays in for an hour in that browser, then types it again.
+  Nobody signs in, so a password page has no comments and no list of who opened it. If the
+  person wants either, that is `restricted`.
 
 ## Publishing from CI
 
@@ -136,7 +207,7 @@ GitHub Actions:
 ```yaml
 - id: site
   run: |
-    url=$(npx -y @strangenoob/colophon@0.11.1 publish ./dist --slug docs --visibility unlisted)
+    url=$(npx -y @strangenoob/colophon@0.12.0 publish ./dist --slug docs --visibility unlisted)
     echo "url=$(tail -n 1 <<< "$url")" >> "$GITHUB_OUTPUT"
   env:
     COLOPHON_TOKEN: ${{ secrets.COLOPHON_TOKEN }}
@@ -158,6 +229,9 @@ GitHub Actions:
   request from a fork gets no secrets. The CLI refuses rather than publishing without an account.
   Publish on `push`, or on pull requests from branches of the same repository.
 - `COLOPHON_API` in the step's `env` points it at a self-hosted instance.
+- A `password` site from CI: publish it the first time from a terminal with its password (see
+  [A password](#a-password)), and leave `--visibility` off in the workflow. Every run then keeps
+  the level and the password; piping it in on each run would make every reader type it again.
 
 There is no Colophon GitHub Action to `uses:`; this step is the supported way. Details at
 https://colophon.fyi/docs/cli#ci.
@@ -182,6 +256,7 @@ colophon list                        # slug, visibility and URL for every site
 colophon search <words>              # which live page says it, across every site in the workspace
 colophon versions <slug>             # every version, newest first, with what each one changed
 colophon versions <slug> --diff 2    # what making v2 live would change against what is live now
+colophon make-live <slug> 2          # make v2 the live version: a rollback, or a draft approved
 colophon visibility <slug> <level>   # change who can open a site without republishing it
 colophon expire <slug> <moment>      # when it stops answering: 410 on every path, nothing deleted
 colophon expire <slug> none          # clear that, so it answers again
@@ -193,8 +268,7 @@ colophon skill install [agent ...]   # put this skill in front of the person's o
 
 `versions` answers "what changed?" without opening two pages: `+2 ~1 -1` per version, or
 `identical` for a republish that moved nothing, and `--diff <n> --patch <path>` prints one
-file's unified diff. Making an older version live is done from the dashboard, where the same
-comparison sits beside the button.
+file's unified diff. `--diff <n>` is the check to run before `make-live <n>`.
 
 `search` answers "which report mentioned X": the text of every site live in the workspace,
 restricted and private included, best match first, each with its URL and the passage that
@@ -202,6 +276,7 @@ matched. `"a phrase"` goes in quotes, quoted again for the shell, and `-word` le
 
 `visibility` and `expire` change a site in place, on the person's word only — they are the
 person's decisions, like the two questions above. Name the level or the moment back to them.
+To `password`, pipe the password in with `--password-stdin`, as above.
 `expire` with a moment already past takes the site down now and deletes nothing; `none`, or a
 later moment, brings it back.
 
@@ -214,16 +289,27 @@ to come down, and name the slug back to them when you do.
 - `your session has expired` — the login lapsed or was revoked. Ask them to run `colophon login` again.
 - `invalid or revoked key` — the key in `COLOPHON_TOKEN` was revoked or copied wrong. Ask for a fresh one.
 - `this command needs a signed-in session` — you ran `create-token` or `switch` with a key. Those are for the person's own terminal.
-- `publishing live needs the publisher role or above; yours in this workspace is editor` — the
-  person's role lets them publish drafts only. Publish with `--draft` and give them the preview
-  URL; a publisher or owner makes it live from the dashboard. Do not ask them to change roles.
+- `publishing live needs the publisher role or above; yours in this workspace is editor` — on
+  `publish` or `make-live`: the person's role lets them publish drafts only. Publish with
+  `--draft` and give them the preview URL and the `make-live` command it printed; a publisher or
+  owner runs that, or uses **Make live** in the dashboard. Do not ask them to change roles.
 - `… needs the owner role or above` on `visibility`, `expire` or `delete`, or `changing an
-  existing site's visibility is for owners` on a republish — those are an owner's decisions.
-  Republish without `--visibility` to keep the level as it is, and say who can change it.
+  existing site's visibility is for owners` (or `password is for owners`) on a republish — those
+  are an owner's decisions. Republish without `--visibility` or `--password-stdin` to keep the
+  site as it is, and say who can change it.
+- `visibility 'password' needs a password for readers to type` — the level went without one.
+  Ask the person for it and pipe it in with `--password-stdin`.
+- `password must be at least 6 characters`, `… cannot start or end with a space` — ask for
+  another. `--password-stdin read nothing` — the pipe was empty. `--password would leave it in
+  your shell history` — pipe it instead.
 - `quota exceeded: sites (4 > 3)` — the plan's site limit. Either `colophon delete` a site
   that is finished with, or the person upgrades. Do not delete one to make room on your own.
 - `archive contains no files` — the directory is empty, or everything in it was skipped.
 - `held for review` — the upload was stored but is not live yet. Say so; do not retry.
+- `… is held for review and cannot be made live` or `… was rejected in review` on `make-live` —
+  that version cannot be put live this way. Say so, and offer an earlier version instead.
+- `no version 9 of <slug>` — the number is not one `colophon versions <slug>` prints. Run it and
+  pick again.
 
 ## Notes
 
