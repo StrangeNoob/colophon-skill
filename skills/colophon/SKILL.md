@@ -160,17 +160,28 @@ address under **Shared with** — the person does not need an account first.
 ### A password
 
 The password is the person's to choose. Ask for it; never make one up unasked, and if they ask
-you to pick, tell them what you picked. Pipe it in — it is never an argument (`--password` is
-refused, since it would sit in shell history and `ps`), and never goes in the site's files:
+you to pick, tell them what you picked. It is never an argument (`--password` is refused, since it
+would sit in shell history and `ps`), and it never goes in the site's files.
+
+The best way keeps it out of this chat and off every command line: give the person the command
+to run in their own terminal, where the CLI asks for it twice and echoes nothing.
+
+```bash
+colophon publish ./review --slug review --visibility password
+```
+
+When they would rather tell you, pipe it in from your own shell. The CLI asks in a terminal only,
+so a command you run must bring the password with it:
 
 ```bash
 printf '%s' 'the password' | colophon publish ./review --slug review --visibility password --password-stdin
 ```
 
-- Without `--password-stdin` the CLI asks for the password in a terminal, which only the person
-  can answer. So when you set one, always pipe it. If they would rather not type it here, give
-  them that command without the `printf` and `--password-stdin` to run in their own terminal:
-  it asks twice and echoes nothing.
+- That line carries the password, so it is for running yourself, never for handing to a person:
+  an interactive shell saves every line in its history. Anything they run themselves is the
+  prompting form above.
+- In a script, take it from a variable the person set — `printf '%s' "$SITE_PASSWORD" | …` —
+  never a literal.
 - At least six characters, and no space at either end. If the server refuses one, ask for
   another; do not trim or pad theirs yourself.
 - **Re-publishing a password site: leave both `--visibility` and `--password-stdin` off.** The
@@ -179,9 +190,10 @@ printf '%s' 'the password' | colophon publish ./review --slug review --visibilit
 - The CLI answers `password set — give it to your readers yourself`: Colophon keeps only a hash
   and can never show it again. Tell the person to keep it with the link and send it to readers
   their own way. Lost, it is replaced, not recovered.
-- To change it: `printf '%s' 'new one' | colophon visibility <slug> password --password-stdin`.
-  Everyone holding the old one is asked again. That, and moving the site to another level (which
-  discards the password), is an owner's decision, like any change of level.
+- To change it, the person runs `colophon visibility <slug> password` in their own terminal and
+  types the new one at the prompt; if they tell you instead, pipe it with `--password-stdin`, as
+  above. Everyone holding the old one is asked again. That, and moving the site to another level
+  (which discards the password), is an owner's decision, like any change of level.
 - A reader types it at the page and stays in for an hour in that browser, then types it again.
   Nobody signs in, so a password page has no comments and no list of who opened it. If the
   person wants either, that is `restricted`.
