@@ -143,9 +143,13 @@ there. A missing script or image still 404s.
   refused. `colophon spa <slug> on|off` changes it without publishing. Once the site exists it is
   an owner's to change, and a draft or a version in review leaves it as it is; the CLI says so.
 - A preview lives at `/<slug>/_v/<id>/`, but a build with base `/<slug>/` asks for its scripts at
-  `/<slug>/assets/…`, which is the live version. So the preview of a built app's `--draft` or
-  `--review` shows blank, or the app that is live, not the new one. Say so when you hand one over,
-  rather than leave a reviewer looking at what seems a broken build.
+  `/<slug>/assets/…`, which is the live version, and its router reads `/_v/<id>/` as a page it
+  does not have. So the preview of a built app's `--draft` or `--review` shows blank, the live
+  scripts, or the app's own not-found page. Say so when you hand one over, rather than leave a
+  reviewer looking at what seems a broken build. To be clicked through before it goes live, it is
+  published first to a second site built for that site's address (`--base=/app-review/`) — by an
+  owner, in a workspace that requires approval. An app with a relative base and hash routes
+  previews as it is.
 
 A `_redirects` file at the root of what you publish moves or rewrites paths, one
 `from to [status]` rule a line, as Netlify reads it (Vite copies `public/_redirects` there):
