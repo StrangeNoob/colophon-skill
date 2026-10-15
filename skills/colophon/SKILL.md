@@ -1,6 +1,6 @@
 ---
 name: colophon
-description: Use when you have produced HTML, Markdown, a plan, a report, a chart, a slide deck, a single file or any directory of files and the person needs a URL for it — publishes a directory or one file to the web, renders bare Markdown as pages, serves a built single-page app, updates it in place, sends a version for a person's approval, rolls it back to an earlier version, controls who can see it — named people, or a password — and takes it down again.
+description: Use when you have produced HTML, Markdown, a plan, a report, a chart, a slide deck, a single file or any directory of files and the person needs a URL for it — publishes a directory or one file to the web, renders bare Markdown as pages, serves a built single-page app, updates it in place, sends a version for a person's approval, rolls it back to an earlier version, controls who can see it — named people, or a password — says who opened it and how far they read, and takes it down again.
 license: MIT
 ---
 
@@ -341,6 +341,42 @@ printf '%s' 'the password' | colophon publish ./review --slug review --visibilit
   Nobody signs in, so a password page has no comments and no list of who opened it. If the
   person wants either, that is `restricted`.
 
+## Knowing who read it
+
+"Has the client opened it?" has an answer only on a `restricted` or `private` site: the reader
+signed in to open it, so Colophon knows who. `public`, `unlisted` and `password` sites count
+visitors and never name one. When the person wants to know who opens a page, that is the reason
+to choose `restricted`; say so when they pick a level.
+
+- **Opened by**, on the site's page in the dashboard, for publishers and owners: everyone who
+  opened it, how many visits, the version they last saw (the live one, an earlier one, or the one
+  sent for review), and how long they have read and how far down they got — "read 4 min,
+  scrolled to 100%". Below it, the people it was shared with who have not opened it yet.
+- **A mail when it happens.** The first time someone opens a restricted or private site, and the
+  first time they open a version they had not seen — a new live version, or the one sent for
+  review — whoever published the live version and whoever sent a version for review are mailed,
+  naming the reader and the version. So "tell me when the client opens it" needs nothing set up.
+  A site published with an API key mails whoever made the key; when nobody who published it may
+  see who opened it, the workspace's owners are mailed instead. Opens a few minutes apart come as
+  one mail, nobody is mailed twice about the same person and version, and the workspace's
+  notification channel, if it has one, hears it too.
+- **Turning it off, or on, is each person's own setting**, and theirs to ask for. On the site's
+  page, **Opened by** has **Stop mailing me** and **Mail me** (on also works for a site they did
+  not publish); **Notifications** turns it off for every site in the workspace. The CLI has no
+  command for it. An agent connected over MCP calls `set_read_alerts` (`mail`, and `slug` for
+  one site); the API is `PUT /api/v1/sites/:id/read-alerts` with `{"mail": false}`. Both act for
+  a signed-in person and refuse an API key, which is nobody to mail — with only a key, send the
+  person to the dashboard.
+
+How a page was read, on any site: when a reader leaves a page, the analytics beacon reports how
+many seconds it was in front of them (up to 30 minutes a view) and how far down they scrolled, in
+quarters of the page. The site's **Reading** card shows each page's median time and how many reads
+got 25, 50, 75 and 100% of the way down; the stats API (`GET /api/v1/stats/sites/:id`, under
+`engagement`) and the MCP tool `site_stats` give the same numbers. Like the view counts this is
+anonymous — no cookie, no new identifier — except on restricted and private sites, where it is
+also added to that reader's line under **Opened by**. Details at
+https://colophon.fyi/docs/analytics#reading and https://colophon.fyi/docs/access#alerts.
+
 ## Publishing from CI
 
 When the person wants a site published from CI — docs on every push to main, a report a scheduled
@@ -488,6 +524,8 @@ to come down, and name the slug back to them when you do.
   another agent: `colophon skill install` detects what is on the machine and installs
   into each; `colophon skill install codex` picks one. Details at https://colophon.fyi/docs/skill.
 
-- Every published page carries a small analytics beacon. Views, referrers and devices show up
-  under the site in the dashboard. No cookies are set and no visitor is identified.
+- Every published page carries a small analytics beacon. Views, referrers, devices, time on page
+  and scroll depth show up under the site in the dashboard. No cookies are set, and no visitor is
+  identified except the signed-in readers of a restricted or private site (see
+  [Knowing who read it](#knowing-who-read-it)).
 - `COLOPHON_API` overrides the API origin for a self-hosted instance.
