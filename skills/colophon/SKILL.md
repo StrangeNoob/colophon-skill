@@ -146,8 +146,8 @@ there. A missing script or image still 404s.
   `https://p<version id>.usercontent.colophon.fyi/app/`. So a built app's `--draft` or `--review`
   loads its own scripts there, and its router reads its own paths: the person or a reviewer
   clicks through it as it will be live. Hand over the URL the CLI printed; never build a preview
-  address yourself. One of the older form, `/app/_v/<id>/`, still opens, but there a built app
-  gets the live version's scripts.
+  address yourself. One of the older form, `/app/_v/<id>/`, sends the reader on to the version's
+  own host.
 
 A `_redirects` file at the root of what you publish moves or rewrites paths, one
 `from to [status]` rule a line, as Netlify reads it (Vite copies `public/_redirects` there):
