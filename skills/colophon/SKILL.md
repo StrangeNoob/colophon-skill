@@ -104,6 +104,11 @@ Prints the URL on stdout and a one-line summary on stderr. Give the person the U
 - `--slug` fixes the URL path. Defaults to a slug derived from the name — pass it explicitly
   when you intend to update this site later, so a changed name cannot move the URL.
 - `.git`, `.env`, `node_modules` and editor junk are never uploaded.
+- **A `.zip` you were handed: unzip it and publish the directory.** The CLI packs whatever path
+  it is given, so `colophon publish site.zip` puts up the zip itself, one file to download. The
+  dashboard takes a `.zip` as it is — dropped on the **Sites** page, like a folder — and so does
+  `POST /api/v1/sites` beside a `.tar.gz`; a `.zip` whose files share one top folder publishes
+  that folder.
 - `--expires <moment>` (ISO 8601, e.g. `2026-10-01T00:00:00Z`) makes the site stop answering
   after that moment — `410` on every path, nothing deleted. For output the person only needs
   for a while, at a deadline they named; never invent one. `--expires none` clears it.
@@ -289,7 +294,10 @@ The second question in full. `unlisted` is the one that matches what people usua
 someone needs to open on their phone in a hurry unless access control actually matters.
 
 To add a named reader to a `restricted` site, open the site in the dashboard and add the
-address under **Shared with** — the person does not need an account first. Each is **Can view**,
+address under **Shared with** — the person does not need an account first. At the page they sign
+in with Google, GitHub, a Microsoft work or school account, or a link mailed to them; what lets
+them in is the address, not the way they signed in. A Microsoft account whose address Microsoft
+has not confirmed is turned away, and the mailed link still works. Each is **Can view**,
 **Can comment** or **Can approve**, the last for a client who signs off
 ([above](#a-client-who-signs-off)).
 
@@ -423,11 +431,13 @@ A workspace can answer on a hostname of its own — `https://m.example.dev/repor
 `list` print; the subdomain form keeps working too. Hand the person whichever the CLI printed —
 both are correct.
 
-Attaching one is an owner's job in the dashboard (**Members → Workspace**), not something you
-can do from the CLI. If the person asks for their sites on their own domain, tell them where,
-and what to expect: they type the hostname, get two DNS records to add (a TXT that proves it is
-theirs and a CNAME to their subdomain), and their URLs switch on their own once both resolve —
-nothing needs republishing. Details at https://colophon.fyi/docs/workspaces#domain.
+Attaching one is an owner's job in the dashboard (**Members & settings → Workspace settings**),
+not something you can do from the CLI. If the person asks for their sites on their own domain,
+tell them where, and what to expect: they type the hostname, get two DNS records to add (a TXT
+that proves it is theirs and a CNAME to `edge.usercontent.colophon.fyi`, the same for every
+workspace), and their URLs switch on their own once both resolve — nothing needs republishing.
+A CNAME to the workspace's own subdomain, the old target, no longer reaches it; the dashboard
+says the record needs the new value. Details at https://colophon.fyi/docs/workspaces#domain.
 
 ## Other commands
 

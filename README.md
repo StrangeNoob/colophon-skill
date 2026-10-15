@@ -60,6 +60,8 @@ On a headless machine—CI, a server, or a sandbox without a browser—set an AP
   answering with a `_redirects` file.
 - Choose between `public`, `unlisted`, `password`, `restricted`, and `private` visibility, and set a
   password without it reaching a command line.
+- Say who opened a `restricted` or `private` site and how far they read, and leave the read mail
+  to each person's own setting.
 - Publish from CI in one `npx` step: pinned, a fixed slug, the key in a secret.
 - Find which live page said something with `colophon search`.
 - Check `colophon whoami` before publishing and keep credentials out of chat.
