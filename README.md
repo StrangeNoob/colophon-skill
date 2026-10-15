@@ -15,7 +15,7 @@ npx --yes skills add StrangeNoob/colophon-skill --skill colophon -g
 Or install through Colophon's own CLI:
 
 ```bash
-npm install -g @strangenoob/colophon@0.12.0
+npm install -g @strangenoob/colophon@0.15.0
 colophon skill install
 ```
 
@@ -39,7 +39,7 @@ Install the [`@strangenoob/colophon`](https://www.npmjs.com/package/@strangenoob
 sign in:
 
 ```bash
-npm install -g @strangenoob/colophon@0.12.0
+npm install -g @strangenoob/colophon@0.15.0
 colophon login
 ```
 
@@ -54,6 +54,10 @@ On a headless machine—CI, a server, or a sandbox without a browser—set an AP
 - Publish a directory or one file with `colophon publish <dir|file>` and return its URL.
 - Re-publish the same slug to update a site without changing its URL.
 - Roll back to an earlier version, or make an approved draft live, with `colophon make-live`.
+- Send a version for review with `--review` and read the decision, leaving approval to a person,
+  in a workspace that requires it too.
+- Publish a built single-page app with `--spa` and the right base path, and keep moved pages
+  answering with a `_redirects` file.
 - Choose between `public`, `unlisted`, `password`, `restricted`, and `private` visibility, and set a
   password without it reaching a command line.
 - Publish from CI in one `npx` step: pinned, a fixed slug, the key in a secret.
