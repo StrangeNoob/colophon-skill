@@ -15,7 +15,7 @@ npx --yes skills add StrangeNoob/colophon-skill --skill colophon -g
 Or install through Colophon's own CLI:
 
 ```bash
-npm install -g @strangenoob/colophon@0.15.0
+npm install -g @strangenoob/colophon@0.16.0
 colophon skill install
 ```
 
@@ -39,7 +39,7 @@ Install the [`@strangenoob/colophon`](https://www.npmjs.com/package/@strangenoob
 sign in:
 
 ```bash
-npm install -g @strangenoob/colophon@0.15.0
+npm install -g @strangenoob/colophon@0.16.0
 colophon login
 ```
 
@@ -62,6 +62,11 @@ On a headless machine—CI, a server, or a sandbox without a browser—set an AP
   password without it reaching a command line.
 - Say who opened a `restricted` or `private` site and how far they read, and leave the read mail
   to each person's own setting.
+- Put a public site on the showcase only when its owner asks, and say when it will be listed.
+- Export the workspace's audit log as a signed file with `colophon audit export`, and check one
+  with `colophon audit verify`, which needs no account.
+- Tell a person where single sign-on through their own identity provider is set up, and sign in
+  again through it in a workspace that requires it.
 - Publish from CI in one `npx` step: pinned, a fixed slug, the key in a secret.
 - Find which live page said something with `colophon search`.
 - Check `colophon whoami` before publishing and keep credentials out of chat.

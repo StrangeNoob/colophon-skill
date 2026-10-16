@@ -1,6 +1,6 @@
 ---
 name: colophon
-description: Use when you have produced HTML, Markdown, a plan, a report, a chart, a slide deck, a single file or any directory of files and the person needs a URL for it — publishes a directory or one file to the web, renders bare Markdown as pages, serves a built single-page app, updates it in place, sends a version for a person's approval, rolls it back to an earlier version, controls who can see it — named people, or a password — says who opened it and how far they read, and takes it down again.
+description: Use when you have produced HTML, Markdown, a plan, a report, a chart, a slide deck, a single file or any directory of files and the person needs a URL for it — publishes a directory or one file to the web, renders bare Markdown as pages, serves a built single-page app, updates it in place, sends a version for a person's approval, rolls it back to an earlier version, controls who can see it — named people, or a password — says who opened it and how far they read, takes it down again, and exports the workspace's audit log as a signed file anyone can verify.
 license: MIT
 ---
 
@@ -15,19 +15,19 @@ correct as the work changes.
 ## Installing the CLI
 
 ```bash
-npm install -g @strangenoob/colophon@0.15.0
+npm install -g @strangenoob/colophon@0.16.0
 ```
 
-Or run it without installing: `npx @strangenoob/colophon@0.15.0 publish ./dir`. Needs Node 18+.
+Or run it without installing: `npx @strangenoob/colophon@0.16.0 publish ./dir`. Needs Node 18+.
 The version is pinned on purpose — it is the CLI this document describes, and the pin moves
-with the skill — rather than whatever npm has on the day. An older CLI has no `spa` or `--spa`
-(0.15.0); has no `review` or `--review` (0.14.0), and before that calls a version the workspace's
-approval rule sent for review a draft to `make-live`; holds the whole archive in memory while it
-uploads (until 0.13.0); has no `make-live` and no `password` level (0.12.0); publishes without an
-account when `COLOPHON_TOKEN` is set but empty (until 0.11.1); has no `search` (0.11.0), no
-`versions`, `visibility`, `expire` or `--expires` (0.9.0); and before 0.7.0 answers
-`colophon list` with the first fifty sites and no sign there are more. `colophon help` shows what
-is installed.
+with the skill — rather than whatever npm has on the day. An older CLI has no `audit` (0.16.0);
+has no `spa` or `--spa` (0.15.0); has no `review` or `--review` (0.14.0), and before that calls a
+version the workspace's approval rule sent for review a draft to `make-live`; holds the whole
+archive in memory while it uploads (until 0.13.0); has no `make-live` and no `password` level
+(0.12.0); publishes without an account when `COLOPHON_TOKEN` is set but empty (until 0.11.1); has
+no `search` (0.11.0), no `versions`, `visibility`, `expire` or `--expires` (0.9.0); and before
+0.7.0 answers `colophon list` with the first fifty sites and no sign there are more.
+`colophon help` shows what is installed.
 
 ## Before the first publish
 
@@ -48,6 +48,9 @@ both ways need them:
   shown once.
 
 Never ask for a key when `login` would do; a key in a chat transcript is a key to revoke.
+
+In a workspace that requires single sign-on, the browser that approves `colophon login` has to
+have signed in through the company's own identity provider; see [Single sign-on](#single-sign-on).
 
 Do not run `publish` signed out to see what happens. Since CLI 0.10.0 a signed-out publish goes
 out without an account: a shared address that answers for 24 hours, with a link to claim it.
@@ -297,9 +300,10 @@ To add a named reader to a `restricted` site, open the site in the dashboard and
 address under **Shared with** — the person does not need an account first. At the page they sign
 in with Google, GitHub, a Microsoft work or school account, or a link mailed to them; what lets
 them in is the address, not the way they signed in. A Microsoft account whose address Microsoft
-has not confirmed is turned away, and the mailed link still works. Each is **Can view**,
-**Can comment** or **Can approve**, the last for a client who signs off
-([above](#a-client-who-signs-off)).
+has not confirmed is turned away, and the mailed link still works. A workspace with
+[its own identity provider](#single-sign-on) can let readers at its domains use that too:
+**Continue with your organisation's sign-in**. Each is **Can view**, **Can comment** or
+**Can approve**, the last for a client who signs off ([above](#a-client-who-signs-off)).
 
 A workspace's owner can cap how open any site may be. A level above the cap is refused, with the
 levels it allows; a new site published with no `--visibility` lands at the most open of those that
@@ -347,6 +351,30 @@ printf '%s' 'the password' | colophon publish ./review --slug review --visibilit
   Nobody signs in, so a password page has no comments and no list of who opened it. If the
   person wants either, that is `restricted`.
 
+### The showcase
+
+https://colophon.fyi/showcase lists public sites their owners chose to show, newest first, each
+with its title, its workspace's name and its preview card. Put a site there only when the person
+asks: it lists the site where anyone can find it. It is an owner's decision, and a person's: the
+**Showcase** card on the site's page in the dashboard, or over MCP `set_showcase` (`slug`,
+`showcase: true` or `false`) from an owner's connected account. The CLI has no command for it, and
+an API key is refused (`a site goes into the showcase only when a person says so, and this is a
+workspace API key`).
+
+- Only a `public` site goes there: `'report' is unlisted; only a public site goes in the
+  showcase`. Making it public first is a change of level like any other, on the person's word.
+- It is not listed at once. Its live version's links are checked for malware and phishing first,
+  and it waits a day after it became public and a day after its name or its front page's title
+  last changed, in a workspace at least a week old. `set_showcase` and `get_site` answer
+  `showcase: {on, shown, why_not, shown_from}`: tell the person what it waits on and when it will
+  appear. `unscanned` among the reasons means the links were never checked, and publishing again
+  checks them.
+- A republish that changes the site's name or its front page's title takes it off for a day; say
+  so when you do one. A republish that changes neither leaves it listed.
+- It leaves at once if the site stops being public or live, or expires. Made anything but public,
+  the switch turns off too, and going public again does not put it back.
+- Listing it changes nothing about the site: search engines still follow the workspace's setting.
+
 ## Knowing who read it
 
 "Has the client opened it?" has an answer only on a `restricted` or `private` site: the reader
@@ -392,7 +420,7 @@ GitHub Actions:
 ```yaml
 - id: site
   run: |
-    url=$(npx -y @strangenoob/colophon@0.15.0 publish ./dist --slug docs --visibility unlisted)
+    url=$(npx -y @strangenoob/colophon@0.16.0 publish ./dist --slug docs --visibility unlisted)
     echo "url=$(tail -n 1 <<< "$url")" >> "$GITHUB_OUTPUT"
   env:
     COLOPHON_TOKEN: ${{ secrets.COLOPHON_TOKEN }}
@@ -439,6 +467,88 @@ workspace), and their URLs switch on their own once both resolve — nothing nee
 A CNAME to the workspace's own subdomain, the old target, no longer reaches it; the dashboard
 says the record needs the new value. Details at https://colophon.fyi/docs/workspaces#domain.
 
+## Single sign-on
+
+A workspace can sign its people in through the company's own identity provider: Okta, Microsoft
+Entra ID, Google Workspace, Keycloak, or any other over OpenID Connect or SAML 2.0. An owner sets
+it up, on the Pro plan, in the dashboard only (**Members & settings → Single sign-on**); no CLI
+command, API route or MCP tool touches it. If the person asks how, tell them where and what to
+expect, and send them to https://colophon.fyi/docs/sso for their provider's steps rather than
+reciting its console from memory. Three steps, each needing the one before:
+
+1. **Prove the email domains** their people use, each by a TXT record at `_colophon.<domain>`.
+   Colophon keeps checking: a record gone for a week and the domain lapses. Public mail domains
+   (gmail.com and the like) cannot be added.
+2. **Connect the provider**, then **Test sign-in**. Over OpenID Connect the provider takes the
+   redirect URI `https://app.colophon.fyi/api/auth/sso/callback`, and the dashboard its issuer,
+   client ID and secret. Over SAML it takes Colophon's entity ID, which is also the metadata URL,
+   `https://app.colophon.fyi/api/auth/saml/<subdomain>/metadata`, and the ACS URL
+   `https://app.colophon.fyi/api/auth/saml/<subdomain>/acs`, with the workspace's subdomain (the
+   left-hand column of `colophon switch`).
+3. **Choose what it may do**: **Require single sign-on for members** at those domains; **Join by
+   signing in**, off unless an owner picks a role, viewer to publisher, for someone at the domains
+   who is not a member yet; **Readers at the gate**, so readers at the domains can use it to open a
+   restricted site that is shared with them or their domain.
+
+It signs in addresses at the verified domains only, and never takes over an account that already
+exists: someone who signed up another way signs in that way once more, then chooses **Continue
+with single sign-on** to link the two.
+
+**Once it is required, it holds you too.** A member at those domains acts in the workspace only
+through a session that came through the provider: the dashboard, `colophon login` and connected
+apps alike.
+
+- `colophon login` has to be approved in a browser signed in through the provider: on the sign-in
+  page, **Use single sign-on** and their work address. A browser signed in with Google or a mailed
+  link cannot approve it for that workspace.
+- A login from before the owner turned it on stops at its next command with `your session has
+  expired`, and `colophon switch acme` answers `'acme' requires signing in through its identity
+  provider`. Either way, ask the person to run `colophon login` again and approve it that way.
+- Over MCP every call answers `this workspace requires signing in through its identity provider —
+  reconnect the app from a browser signed in that way`. The person reconnects; you cannot.
+- API keys are the workspace's, not a person's, and the rule does not reach them. That is no way
+  round it: a key is still for headless runs, never for a person who can sign in.
+- Members at other domains (a contractor at their own company) are not held to it.
+
+## The audit log
+
+Every change in a workspace is an entry in its audit log, numbered, hash-chained and never
+editable: each publish, share, invitation, key, setting and sign-in, and each reader refused at the
+gate. Owners read it under **Audit log** in the dashboard. On the Pro plan an owner can export it as
+a file Colophon signs, which anyone can check without trusting whoever hands it over:
+
+```bash
+colophon audit export --from 2026-01-01 --to 2026-04-01 --out q1.jsonl   # the first quarter
+colophon audit verify q1.jsonl
+```
+
+- **Export only when the person asks.** The log names every member, every key and every refused
+  reader. Always pass `--out`: without it the whole log comes out on stdout, into this
+  conversation. Hand over the path, not the contents.
+- `--from` and `--to` are ISO moments, or dates meaning midnight UTC; `--to` is not included, and
+  without either it is everything kept. JSON Lines unless `--format csv`. The API is
+  `GET /api/v1/audit/export` with the same `from`, `to` and `format`.
+- An owner's `colophon login` can export. A key needs the `audit` scope, which a key has only when
+  it is named: `colophon create-token --name siem --scopes audit`, for a scheduled pull into a SIEM
+  the person asked for. Never add `audit` to a key for publishing or CI. A connected app cannot
+  export; there is no MCP tool for it.
+- **Never edit, reformat or re-save an export**, not even to pretty-print it: any change fails
+  verification. Read or convert a copy.
+- `verify` needs no login. It checks the file against Colophon's public key, published at
+  `https://app.colophon.fyi/.well-known/colophon-audit-keys`, so an auditor runs it themselves:
+  `npx @strangenoob/colophon@0.16.0 audit verify q1.jsonl`. It prints `verified: entries
+  1204–1873 (670) of workspace …`, or names the entry that fails and exits 1: `q1.jsonl does not
+  verify: entry 1210: its contents do not match its hash — it was altered`. That is a finding to
+  report as it stands, not something to fix. `--keys` takes a saved copy of the key document,
+  worth archiving beside exports.
+- `… the last line is not the manifest: the file is cut short, or not an export` — the download
+  ended early: the connection dropped, or old entries were removed while it ran. Export again.
+
+How long it is kept is an owner's choice under **Members & settings → Audit log retention**, in
+the dashboard only: forever, the default, or 90 days, 1, 2 or 7 years on Pro. Older entries go
+within the hour, so suggest exporting first. What is left still verifies, and `verify` says up to
+which entry the log was cut. Details at https://colophon.fyi/docs/audit.
+
 ## Other commands
 
 ```bash
@@ -455,6 +565,8 @@ colophon spa <slug> on|off           # the single-page-app fallback, without rep
 colophon delete <slug>               # permanently removes a site and every version
 colophon link <url> --code q3        # a short redirect on the workspace's own domain
 colophon switch [workspace]          # list the workspaces the person belongs to, or work in another
+colophon audit export --out <file>   # the audit log as a signed file: an owner, or a key with audit
+colophon audit verify <file>         # check an export against Colophon's key; needs no login
 colophon skill install [agent ...]   # put this skill in front of the person's other coding agents
 ```
 
@@ -479,6 +591,10 @@ to come down, and name the slug back to them when you do.
 
 - `not signed in` — ask the person to run `colophon login` (or, headless, for a key), as above.
 - `your session has expired` — the login lapsed or was revoked. Ask them to run `colophon login` again.
+  In a workspace that requires single sign-on, approved from a browser signed in through it.
+- `… requires signing in through its identity provider` — on `switch` or over MCP: the workspace
+  requires [single sign-on](#single-sign-on). The person logs in or reconnects through it; do not
+  reach for a key.
 - `invalid or revoked key` — the key in `COLOPHON_TOKEN` was revoked or copied wrong. Ask for a fresh one.
 - `this command needs a signed-in session` — you ran `create-token` or `switch` with a key. Those are for the person's own terminal.
 - `publishing live needs the publisher role or above; yours in this workspace is editor` — on
@@ -522,12 +638,17 @@ to come down, and name the slug back to them when you do.
   `--note goes with --review` — a note is for reviewers, so it needs `--review`.
 - `no version 9 of <slug>` — the number is not one `colophon versions <slug>` prints. Run it and
   pick again.
+- `key lacks the 'audit' scope` — the key cannot export the audit log; an owner mints one with
+  `--scopes audit`, if the person wants a key for it at all. `your role in acme does not allow
+  'audit'` — only an owner exports.
+- `exporting the audit log is on the Pro plan; this workspace is on Free` — say so; upgrading is
+  the person's.
 
 ## Notes
 
 - Docs live at https://colophon.fyi/docs — the sign-in flow is /docs/signin, the CLI reference
-  /docs/cli, access levels /docs/access. Link to them instead of paraphrasing when the person
-  wants detail.
+  /docs/cli, access levels and the showcase /docs/access, single sign-on /docs/sso, the audit log
+  /docs/audit. Link to them instead of paraphrasing when the person wants detail.
 - If the person asks how to get this skill into Codex, Cursor, Gemini CLI, Copilot, OpenCode or
   another agent: `colophon skill install` detects what is on the machine and installs
   into each; `colophon skill install codex` picks one. Details at https://colophon.fyi/docs/skill.
