@@ -12,12 +12,16 @@ Install through the cross-agent Skills CLI and choose the agents you use:
 npx --yes skills add StrangeNoob/colophon-skill --skill colophon -g
 ```
 
-Or install through Colophon's own CLI:
+Or install through Colophon's own CLI, which installs the skill release that CLI pins rather than
+this repository's main branch:
 
 ```bash
-npm install -g @strangenoob/colophon@0.16.0
+npm install -g @strangenoob/colophon
 colophon skill install
 ```
+
+CLI 0.16.1 and 0.17.0 pin v0.8.0, written before Colophon moved to colophon.here, so until a
+newer CLI is out, install this release with the Skills CLI above.
 
 `colophon skill install` detects its supported clients: Claude Code, Codex, Cursor, Gemini CLI,
 GitHub Copilot, OpenCode, Windsurf, Cline, and Amp. Claude Code receives the plugin; the other
@@ -39,7 +43,7 @@ Install the [`@strangenoob/colophon`](https://www.npmjs.com/package/@strangenoob
 sign in:
 
 ```bash
-npm install -g @strangenoob/colophon@0.16.0
+npm install -g @strangenoob/colophon@0.17.0
 colophon login
 ```
 
@@ -47,7 +51,7 @@ The version is pinned to the CLI this skill describes and moves with each skill 
 
 On a headless machine—CI, a server, or a sandbox without a browser—set an API key in
 `COLOPHON_TOKEN`. Mint one with `colophon create-token --name <agent>` from your own machine. See
-[Signing in](https://colophon.fyi/docs/signin) for the complete authentication flow.
+[Signing in](https://colophon.here/docs/signin) for the complete authentication flow.
 
 ## What the skill teaches
 
@@ -73,6 +77,6 @@ On a headless machine—CI, a server, or a sandbox without a browser—set an AP
 - Explain operational failures without deleting an existing site on the user's behalf.
 
 See [PUBLISHING.md](PUBLISHING.md) for release and marketplace instructions. Product documentation
-lives at [colophon.fyi/docs](https://colophon.fyi/docs).
+lives at [colophon.here/docs](https://colophon.here/docs).
 
 MIT © StrangeNoob

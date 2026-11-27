@@ -29,7 +29,7 @@ GitHub CLI 2.90 or later can validate and publish every skill in this repository
 
 ```bash
 gh skill publish --dry-run
-gh skill publish --tag v0.8.0
+gh skill publish --tag v0.9.0
 ```
 
 Commit and push the tested release commit before publishing. Do not publish from an unmerged
@@ -60,9 +60,9 @@ Upload the clean archive as a skills-only plugin in the
 
 - Name: **Colophon**
 - Category: **Developer Tools**
-- Website: <https://colophon.fyi>
+- Website: <https://colophon.here>
 - Support: <https://github.com/StrangeNoob/colophon-skill/issues>
-- Short description: **Publish agent-made files to a stable URL.**
+- Short description: **Publish files to a stable URL.**
 - Long description: **Publish HTML, reports, charts, slide decks, and other generated files to one
   governed URL. Update the same URL in place and choose who can open it.**
 
@@ -72,10 +72,10 @@ they are test specifications, not evidence of a live service test.
 
 The portal requires a verified developer identity before it allows plugin creation or upload.
 Before submitting, supply approved public privacy and terms URLs, select supported regions, and
-provide dedicated reviewer credentials through the portal's private fields. As of September 5,
-2026, `colophon.fyi/privacy` and `colophon.fyi/terms` redirect to
-404 pages. The manifest intentionally omits those URLs until real policies are available.
-Do not publish generated policy text as an approved legal policy or store reviewer credentials in
+provide dedicated reviewer credentials through the portal's private fields. Colophon's privacy
+policy and terms have been live at <https://colophon.here/privacy> and
+<https://colophon.here/terms> since 21 November 2026, and `.codex-plugin/plugin.json` names them
+as `privacyPolicyURL` and `termsOfServiceURL` in `interface`. Do not store reviewer credentials in
 this repository. See [OpenAI submission requirements](https://developers.openai.com/plugins/deploy/submission).
 
 Submission starts a review. It does not immediately publish the plugin; after approval, the
