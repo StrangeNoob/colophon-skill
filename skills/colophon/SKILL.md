@@ -15,12 +15,14 @@ correct as the work changes.
 ## Installing the CLI
 
 ```bash
-npm install -g @strangenoob/colophon@0.16.0
+npm install -g @strangenoob/colophon@0.17.0
 ```
 
-Or run it without installing: `npx @strangenoob/colophon@0.16.0 publish ./dir`. Needs Node 18+.
+Or run it without installing: `npx @strangenoob/colophon@0.17.0 publish ./dir`. Needs Node 18+.
 The version is pinned on purpose — it is the CLI this document describes, and the pin moves
-with the skill — rather than whatever npm has on the day. An older CLI has no `audit` (0.16.0);
+with the skill — rather than whatever npm has on the day. An older CLI signs in at the
+dashboard's old address, where `login`, `whoami`, `switch` and `create-token` now fail with
+`Colophon's dashboard moved to https://app.colophon.here` (before 0.17.0); has no `audit` (0.16.0);
 has no `spa` or `--spa` (0.15.0); has no `review` or `--review` (0.14.0), and before that calls a
 version the workspace's approval rule sent for review a draft to `make-live`; holds the whole
 archive in memory while it uploads (until 0.13.0); has no `make-live` and no `password` level
@@ -57,7 +59,7 @@ out without an account: a shared address that answers for 24 hours, with a link 
 That is for someone trying Colophon, not a home for the person's work.
 
 If they ask what `login` does, where the session lives, or how to revoke it, point them at
-https://colophon.fyi/docs/signin rather than explaining from memory.
+https://colophon.here/docs/signin rather than explaining from memory.
 
 ## Ask two things first
 
@@ -113,7 +115,8 @@ Prints the URL on stdout and a one-line summary on stderr. Give the person the U
   `POST /api/v1/sites` beside a `.tar.gz`; a `.zip` whose files share one top folder publishes
   that folder.
 - `--expires <moment>` (ISO 8601, e.g. `2026-10-01T00:00:00Z`) makes the site stop answering
-  after that moment — `410` on every path, nothing deleted. For output the person only needs
+  after that moment — `410` on every path. For 30 days nothing is deleted and `none` brings it
+  back; after that the site is deleted with every version. For output the person only needs
   for a while, at a deadline they named; never invent one. `--expires none` clears it.
 - A built React, Vite or Vue app needs `--spa` and the right base path; see
   [A built app, and redirects](#a-built-app-and-redirects). Work someone else must agree to first
@@ -151,7 +154,7 @@ there. A missing script or image still 404s.
   refused. `colophon spa <slug> on|off` changes it without publishing. Once the site exists it is
   an owner's to change, and a draft or a version in review leaves it as it is; the CLI says so.
 - A preview has a host of its own, with the site at the path it lives at:
-  `https://p<version id>.usercontent.colophon.fyi/app/`. So a built app's `--draft` or `--review`
+  `https://p<version id>.colophon.fyi/app/`. So a built app's `--draft` or `--review`
   loads its own scripts there, and its router reads its own paths: the person or a reviewer
   clicks through it as it will be live. Hand over the URL the CLI printed; never build a preview
   address yourself. One of the older form, `/app/_v/<id>/`, sends the reader on to the version's
@@ -213,7 +216,8 @@ gives the site's URL. Give the person both, and say who was asked.
   put back — the same way, and leaves the version already in review as it is, saying so.
 - **Approving is a person's sign-off, never yours.** There is no approve command. A publisher or
   owner approves in the site's **Review** panel in the dashboard (**Approve and make live**), a
-  client at Can approve on the page. Do not approve by `make-live` either: a version in review made live that
+  client at Can approve on a page of Colophon's own site that the page's **Review** panel leads
+  to. Do not approve by `make-live` either: a version in review made live that
   way is approved in the name of whoever's login ran it. When the person asking you to put it live
   is the one who would approve, send them to the **Review** panel: one click, and the approval,
   with their note, is theirs.
@@ -240,9 +244,11 @@ workspace needs approval before a version goes live`. Owners are not held to it.
 ### A client who signs off
 
 On a `restricted` site, someone outside the workspace can be the one who approves: shared at
-**Can approve** under **Shared with**, by their own address, never a domain. They are mailed when
-a version is sent for review, sign in, read the note, and approve or ask for changes on the page
-itself. One approval is enough, so theirs puts the version live without anyone in the workspace.
+**Can approve** under **Shared with**, by their own address, never a domain. They are mailed a
+link when a version is sent for review, sign in, and read the note in the page's **Review** panel;
+**Approve or request changes** takes them to a page on Colophon's own site, where they decide,
+with a note of their own. They never see the dashboard, and nothing on the published page itself
+approves. One approval is enough, so theirs puts the version live without anyone in the workspace.
 That is why it is granted only when the person asks for the client to sign off, and only by an
 owner: in the dashboard, or over MCP with `share_site` and `role: "approver"`. The CLI has no
 command for it. `versions` names them as one: `approved on v4 by <name> (outside approver,
@@ -278,7 +284,8 @@ same command.
   `held for review` and `rejected in review`; they are not the workspace's own review, and nobody
   in the workspace can approve them.
 - It does not touch the expiry. On an expired site the CLI says so — the site still answers
-  `410`, and bringing it back (`colophon expire <slug> none`) is the owner's call.
+  `410`, and bringing it back (`colophon expire <slug> none`) is the owner's call, within 30 days
+  of the moment it expired, before it is deleted.
 
 ## Choosing visibility
 
@@ -353,7 +360,7 @@ printf '%s' 'the password' | colophon publish ./review --slug review --visibilit
 
 ### The showcase
 
-https://colophon.fyi/showcase lists public sites their owners chose to show, newest first, each
+https://colophon.here/showcase lists public sites their owners chose to show, newest first, each
 with its title, its workspace's name and its preview card. Put a site there only when the person
 asks: it lists the site where anyone can find it. It is an owner's decision, and a person's: the
 **Showcase** card on the site's page in the dashboard, or over MCP `set_showcase` (`slug`,
@@ -409,7 +416,7 @@ got 25, 50, 75 and 100% of the way down; the stats API (`GET /api/v1/stats/sites
 `engagement`) and the MCP tool `site_stats` give the same numbers. Like the view counts this is
 anonymous — no cookie, no new identifier — except on restricted and private sites, where it is
 also added to that reader's line under **Opened by**. Details at
-https://colophon.fyi/docs/analytics#reading and https://colophon.fyi/docs/access#alerts.
+https://colophon.here/docs/analytics#reading and https://colophon.here/docs/access#alerts.
 
 ## Publishing from CI
 
@@ -420,7 +427,7 @@ GitHub Actions:
 ```yaml
 - id: site
   run: |
-    url=$(npx -y @strangenoob/colophon@0.16.0 publish ./dist --slug docs --visibility unlisted)
+    url=$(npx -y @strangenoob/colophon@0.17.0 publish ./dist --slug docs --visibility unlisted)
     echo "url=$(tail -n 1 <<< "$url")" >> "$GITHUB_OUTPUT"
   env:
     COLOPHON_TOKEN: ${{ secrets.COLOPHON_TOKEN }}
@@ -450,22 +457,24 @@ GitHub Actions:
   It goes live when someone approves it. Tell the person when you set the workflow up.
 
 There is no Colophon GitHub Action to `uses:`; this step is the supported way. Details at
-https://colophon.fyi/docs/cli#ci.
+https://colophon.here/docs/cli#ci.
 
 ## Their own domain
 
 A workspace can answer on a hostname of its own — `https://m.example.dev/report/` instead of
-`https://acme.usercontent.colophon.fyi/report/`. Once it is live, that is the URL `publish` and
+`https://acme.colophon.fyi/report/`. Once it is live, that is the URL `publish` and
 `list` print; the subdomain form keeps working too. Hand the person whichever the CLI printed —
 both are correct.
 
 Attaching one is an owner's job in the dashboard (**Members & settings → Workspace settings**),
 not something you can do from the CLI. If the person asks for their sites on their own domain,
 tell them where, and what to expect: they type the hostname, get two DNS records to add (a TXT
-that proves it is theirs and a CNAME to `edge.usercontent.colophon.fyi`, the same for every
-workspace), and their URLs switch on their own once both resolve — nothing needs republishing.
-A CNAME to the workspace's own subdomain, the old target, no longer reaches it; the dashboard
-says the record needs the new value. Details at https://colophon.fyi/docs/workspaces#domain.
+that proves it is theirs and a CNAME to `edge.colophon.fyi`, the same for every workspace), and
+their URLs switch on their own once both resolve — nothing needs republishing. A CNAME already
+pointed at `edge.usercontent.colophon.fyi`, the value until the sites moved to `colophon.fyi`,
+still works: nothing to change. A CNAME to the workspace's own subdomain, the target before
+October 2026, no longer reaches it; the dashboard says the record needs the new value. Details at
+https://colophon.here/docs/workspaces#domain.
 
 ## Single sign-on
 
@@ -473,18 +482,20 @@ A workspace can sign its people in through the company's own identity provider: 
 Entra ID, Google Workspace, Keycloak, or any other over OpenID Connect or SAML 2.0. An owner sets
 it up, on the Pro plan, in the dashboard only (**Members & settings → Single sign-on**); no CLI
 command, API route or MCP tool touches it. If the person asks how, tell them where and what to
-expect, and send them to https://colophon.fyi/docs/sso for their provider's steps rather than
+expect, and send them to https://colophon.here/docs/sso for their provider's steps rather than
 reciting its console from memory. Three steps, each needing the one before:
 
 1. **Prove the email domains** their people use, each by a TXT record at `_colophon.<domain>`.
    Colophon keeps checking: a record gone for a week and the domain lapses. Public mail domains
    (gmail.com and the like) cannot be added.
 2. **Connect the provider**, then **Test sign-in**. Over OpenID Connect the provider takes the
-   redirect URI `https://app.colophon.fyi/api/auth/sso/callback`, and the dashboard its issuer,
+   redirect URI `https://app.colophon.here/api/auth/sso/callback`, and the dashboard its issuer,
    client ID and secret. Over SAML it takes Colophon's entity ID, which is also the metadata URL,
-   `https://app.colophon.fyi/api/auth/saml/<subdomain>/metadata`, and the ACS URL
-   `https://app.colophon.fyi/api/auth/saml/<subdomain>/acs`, with the workspace's subdomain (the
-   left-hand column of `colophon switch`).
+   `https://app.colophon.here/api/auth/saml/<subdomain>/metadata`, and the ACS URL
+   `https://app.colophon.here/api/auth/saml/<subdomain>/acs`, with the workspace's subdomain (the
+   left-hand column of `colophon switch`). A connection set up before 21 November 2026 gave the
+   provider these at `app.colophon.fyi`, the dashboard's old address, and signing in through it
+   fails until an admin at the provider changes them to these.
 3. **Choose what it may do**: **Require single sign-on for members** at those domains; **Join by
    signing in**, off unless an owner picks a role, viewer to publisher, for someone at the domains
    who is not a member yet; **Readers at the gate**, so readers at the domains can use it to open a
@@ -532,11 +543,14 @@ colophon audit verify q1.jsonl
   it is named: `colophon create-token --name siem --scopes audit`, for a scheduled pull into a SIEM
   the person asked for. Never add `audit` to a key for publishing or CI. A connected app cannot
   export; there is no MCP tool for it.
-- **Never edit, reformat or re-save an export**, not even to pretty-print it: any change fails
-  verification. Read or convert a copy.
+- **Never edit, reformat or re-save an export**, not even to pretty-print it: a change to an
+  entry's hashed fields, or to the signed manifest, fails verification. Read or convert a copy.
+- Each entry's `id`, `actor_email` and `key_name` are not hashed, so a changed one still
+  verifies. The last two say who that person or key is as the file is made; who acted is
+  `actor_user_id` or `actor_key_id`. Say so when the person relies on a name from the file.
 - `verify` needs no login. It checks the file against Colophon's public key, published at
-  `https://app.colophon.fyi/.well-known/colophon-audit-keys`, so an auditor runs it themselves:
-  `npx @strangenoob/colophon@0.16.0 audit verify q1.jsonl`. It prints `verified: entries
+  `https://app.colophon.here/.well-known/colophon-audit-keys`, so an auditor runs it themselves:
+  `npx @strangenoob/colophon@0.17.0 audit verify q1.jsonl`. It prints `verified: entries
   1204–1873 (670) of workspace …`, or names the entry that fails and exits 1: `q1.jsonl does not
   verify: entry 1210: its contents do not match its hash — it was altered`. That is a finding to
   report as it stands, not something to fix. `--keys` takes a saved copy of the key document,
@@ -547,7 +561,7 @@ colophon audit verify q1.jsonl
 How long it is kept is an owner's choice under **Members & settings → Audit log retention**, in
 the dashboard only: forever, the default, or 90 days, 1, 2 or 7 years on Pro. Older entries go
 within the hour, so suggest exporting first. What is left still verifies, and `verify` says up to
-which entry the log was cut. Details at https://colophon.fyi/docs/audit.
+which entry the log was cut. Details at https://colophon.here/docs/audit.
 
 ## Other commands
 
@@ -559,7 +573,7 @@ colophon versions <slug> --diff 2    # what making v2 live would change against 
 colophon review <slug> 2 --note "…"  # send v2 for review: a draft, or an earlier version to put back
 colophon make-live <slug> 2          # make v2 the live version: a rollback, or a draft approved
 colophon visibility <slug> <level>   # change who can open a site without republishing it
-colophon expire <slug> <moment>      # when it stops answering: 410 on every path, nothing deleted
+colophon expire <slug> <moment>      # when it stops answering: 410 on every path, deleted 30 days on
 colophon expire <slug> none          # clear that, so it answers again
 colophon spa <slug> on|off           # the single-page-app fallback, without republishing
 colophon delete <slug>               # permanently removes a site and every version
@@ -581,8 +595,11 @@ matched. `"a phrase"` goes in quotes, quoted again for the shell, and `-word` le
 `visibility` and `expire` change a site in place, on the person's word only — they are the
 person's decisions, like the two questions above. Name the level or the moment back to them.
 To `password`, pipe the password in with `--password-stdin`, as above.
-`expire` with a moment already past takes the site down now and deletes nothing; `none`, or a
-later moment, brings it back.
+`expire` with a moment already past takes the site down now and deletes nothing yet; `none`, or a
+later moment, brings it back. Thirty days after the moment it expired, the site is deleted with
+every version, so a moment more than 30 days past makes it due for deletion at once, at the next
+hourly sweep that reaches it: say so, and
+for a site the person wants gone, `delete` is the plain way.
 
 `delete` is not reversible and does not ask. Only run it when the person asked for that site
 to come down, and name the slug back to them when you do.
@@ -590,6 +607,10 @@ to come down, and name the slug back to them when you do.
 ## When it fails
 
 - `not signed in` — ask the person to run `colophon login` (or, headless, for a key), as above.
+- `Colophon's dashboard moved to https://app.colophon.here …` — the CLI is older than 0.17.0, or
+  `COLOPHON_APP` still names `app.colophon.fyi`. Install the pinned CLI (above), unset that
+  variable, and run the command again. A login from before the move keeps working with it, so
+  nobody needs to sign in again.
 - `your session has expired` — the login lapsed or was revoked. Ask them to run `colophon login` again.
   In a workspace that requires single sign-on, approved from a browser signed in through it.
 - `… requires signing in through its identity provider` — on `switch` or over MCP: the workspace
@@ -646,12 +667,15 @@ to come down, and name the slug back to them when you do.
 
 ## Notes
 
-- Docs live at https://colophon.fyi/docs — the sign-in flow is /docs/signin, the CLI reference
+- Docs live at https://colophon.here/docs — the sign-in flow is /docs/signin, the CLI reference
   /docs/cli, access levels and the showcase /docs/access, single sign-on /docs/sso, the audit log
   /docs/audit. Link to them instead of paraphrasing when the person wants detail.
 - If the person asks how to get this skill into Codex, Cursor, Gemini CLI, Copilot, OpenCode or
   another agent: `colophon skill install` detects what is on the machine and installs
-  into each; `colophon skill install codex` picks one. Details at https://colophon.fyi/docs/skill.
+  into each; `colophon skill install codex` picks one. Details at https://colophon.here/docs/skill.
+  It installs the skill release its CLI pins, and CLI 0.17.0 pins v0.8.0, written before the move
+  to colophon.here: until a newer CLI is out, install this one with
+  `npx --yes skills add StrangeNoob/colophon-skill --skill colophon -g` instead.
 
 - Every published page carries a small analytics beacon. Views, referrers, devices, time on page
   and scroll depth show up under the site in the dashboard. No cookies are set, and no visitor is

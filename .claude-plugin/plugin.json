@@ -1,10 +1,10 @@
 {
   "name": "colophon",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Publish a directory to the web and get back one governed, versioned URL",
   "author": {
     "name": "StrangeNoob"
   },
-  "homepage": "https://colophon.fyi",
+  "homepage": "https://colophon.here",
   "license": "MIT"
 }
